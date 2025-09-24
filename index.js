@@ -4,9 +4,6 @@ const app = express()
 const cors = require("cors");
 require("dotenv").config();
 
-
-
-
 // import routes
 const category = require('./route/categories')
 const product = require ('./route/products')
@@ -14,6 +11,10 @@ const customer = require ('./route/customers')
 const user = require('./route/users')
 const auth = require('./route/auth')
 const config = require('config')
+const carts = require('./route/carts')
+const orders = require('./route/carts')
+
+
 
 // check for jwtPrivateKey
 if (!config.get('jwtPrivateKey')){
@@ -30,11 +31,13 @@ app.use(cors({ origin: '*' }));
 app.use(express.json())
 
 // Routes
-app.use('/byc/document/api/categories', category)
-app.use('/byc/api/products', product)
-app.use('/byc/api/customers', customer)
-app.use('/byc/api/register', user)
-app.use('/byc/api/login', auth)
+app.use('/byc/document/api/categories', category);
+app.use('/byc/api/products', product);
+app.use('/byc/api/customers', customer);
+app.use('/byc/api/register', user);
+app.use('/byc/api/login', auth);
+app.use('/byc/api/carts', carts);
+app.use('/byc/api/orders',orders)
 
 
 // connect to mongodb

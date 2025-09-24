@@ -13,13 +13,13 @@ router.post('/', async(req, res) => {
 const { error } = validateLogin(req.body);
 if (error) return res.status(400).json({ success: false, message: error.details[0].message });
 let user = await User.findOne({ email: req.body.email });
-if (!user) return res.status(400).json({ success: false, message: 'Invalid email.' });
+if (!user) return res.status(400).json({ success: false, message: 'Invalid email address.' });
 
 
 const validPassword = await bcrypt.compare(req.body.password, user.password);
 if (!validPassword) return res.status(400).json({ success: false, message: 'Invalid  password.' });
-const token = jwt.sign({_id: user._id, name: user.name, role: user.role}, config.get('jwtPrivateKey'));
-res.json({ success: true, token, role: user.role, _id: user._id });
+const token = user.generateAuthToken();
+res.json({ success: true, token, _id: user._id, name: user.name });
 })
 
 router.put('/:id', async (req, res) => {
@@ -47,8 +47,8 @@ router.put('/:id', async (req, res) => {
 
 function validateLogin(req) {
 const schema = Joi.object({
-email: Joi.string().min(5).max(255).required().email(),
-password: Joi.string().min(5).max(255).required(),
+  email: Joi.string().min(5).max(255).required().email(),
+  password: Joi.string().min(5).max(255).required(),
 });
 return schema.validate(req);
 }

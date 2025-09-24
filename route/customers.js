@@ -5,13 +5,13 @@ const router = express.Router()
 
 router.get('/', async (req, res) => {
     const customers = await Customer.find().sort('name')
-    res.send(customers)
+    res.json(customers)
 
 })
 
 router.post('/', async (req, res) => {
     const {error} = validate(req.body);
-    if (error)  return res.status(400).send(error.details[0].message)
+    if (error)  return res.status(400).json(error.details[0].message)
     
     let customer = new Customer({
         name: req.body.name,
@@ -26,19 +26,19 @@ router.post('/', async (req, res) => {
     
     try {
         customer = await customer.save()
-        res.send(customer)
+        res.json(customer)
     } catch (err) {
         if (err.code === 11000) {
            const field = Object.keys(err.keyValue)[0];
-           return res.status(400).send(`The ${field} is already registered.`);
+           return res.status(400).json(`The ${field} is already registered.`);
         }
-        res.status(500).send('Something failed, please try again later.')
+        res.status(500).json('Something failed, please try again later.')
     }
 })
 
 router.put('/:id', async (req, res) => {
     const {error} = validate(req.body);
-    if (error)  return res.status(400).send(error.details[0].message)
+    if (error)  return res.status(400).json(error.details[0].message)
 
     const customer = await Customer.findByIdAndUpdate(req.params.id, {
         name: req.body.name,
@@ -51,26 +51,26 @@ router.put('/:id', async (req, res) => {
         email: req.body.email 
     }, {new: true})
 
-    if (!customer) return res.status(400).send('The customer with the given id not Found');
+    if (!customer) return res.status(400).json('The customer with the given id not Found');
 
-    res.send(customer)
+    res.json(customer)
 })
 
 router.delete('/:id', async (req, res) => {
     const customer = await Customer.findByIdAndDelete(req.params.id)
 
-    if(!customer) return res.status(400).send('The customer with the given id not Found');
+    if(!customer) return res.status(400).json('The customer with the given id not Found');
 
-    res.send(customer)
+    res.json(customer)
 
 })
 
 router.get('/:id', async (req, res) => {
     const customer = await Customer.findById(req.params.id)
     
-    if(!customer) return res.status(400).send('The customer with the given id not Found');
+    if(!customer) return res.status(400).json('The customer with the given id not Found');
 
-    res.send(customer)
+    res.json(customer)
 })
 
 
